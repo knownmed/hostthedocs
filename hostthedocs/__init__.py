@@ -114,7 +114,3 @@ def version(project, version, path):
 app.wsgi_app = DispatcherMiddleware(Flask("placeholder"), {
     app.config['APPLICATION_ROOT']: app.wsgi_app,
 })
-
-
-def get_app():
-    return app
