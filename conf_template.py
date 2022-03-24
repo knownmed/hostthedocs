@@ -34,6 +34,8 @@ intro = None
 host = None
 # Port to serve.
 port = None
+# Prefix for all URLs.
+prefix = None
 # Whether to serve in debug mode. Only used by Flask.
 debug = None
 

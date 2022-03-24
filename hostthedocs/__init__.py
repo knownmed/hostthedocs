@@ -8,7 +8,7 @@ from .filekeeper import delete_files, insert_link_to_latest, parse_docfiles, unp
 
 app = Flask(__name__)
 
-app.config["APPLICATION_ROOT"] = "/docs/py"
+app.config["APPLICATION_ROOT"] = getconfig.prefix
 app.config['MAX_CONTENT_LENGTH'] = getconfig.max_content_mb * 1024 * 1024
 
 
@@ -68,7 +68,6 @@ def latest(project, path):
     return redirect('/' + latestlink)
 
 
-app.wsgi_app = DispatcherMiddleware(Flask('dummy_app'), {
+app.wsgi_app = DispatcherMiddleware(app, {
     app.config['APPLICATION_ROOT']: app.wsgi_app,
-    # "/docs/py": app.wsgi_app,
 })
