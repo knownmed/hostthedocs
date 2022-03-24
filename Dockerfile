@@ -7,8 +7,10 @@ RUN mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 COPY ./ /hostthedocs/
 WORKDIR /hostthedocs/
 RUN --mount=type=ssh PIPENV_VENV_IN_PROJECT=1 pipenv install
-# We will be mounting a volume here
-RUN rm -rf ./hostthedocs/static/
+# We will be mounting a volume here to host docs
+RUN rm -rf ./hostthedocs/static/docfiles/
+# We will configure from env vars
+RUN rm -rf ./conf.py
 
 
 # TODO go back to running with pipenv instead of python?
