@@ -39,6 +39,7 @@ To add your docs, see
 
 host = get('host', '127.0.0.1')
 port = int(get('port', 5000))
+# TODO check for duplicate '/'
 prefix = get("prefix", "/")
 debug = bool(get('debug', None))
 readonly = get('readonly', False)
