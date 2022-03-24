@@ -1,12 +1,14 @@
 import os
 
 from flask import abort, Flask, jsonify, redirect, render_template, request
+from werkzeug.wsgi import DispatcherMiddleware
 
 from . import getconfig, util
 from .filekeeper import delete_files, insert_link_to_latest, parse_docfiles, unpack_project
 
 app = Flask(__name__)
 
+app.config["APPLICATION_ROOT"] = "/docs/py"
 app.config['MAX_CONTENT_LENGTH'] = getconfig.max_content_mb * 1024 * 1024
 
 
@@ -64,3 +66,9 @@ def latest(project, path):
     else:
         latestlink = latestindex
     return redirect('/' + latestlink)
+
+
+app.wsgi_app = DispatcherMiddleware(Flask('dummy_app'), {
+    app.config['APPLICATION_ROOT']: app.wsgi_app,
+    # "/docs/py": app.wsgi_app,
+})
