@@ -12,11 +12,23 @@ app.config["APPLICATION_ROOT"] = getconfig.prefix
 app.config['MAX_CONTENT_LENGTH'] = getconfig.max_content_mb * 1024 * 1024
 
 
-@app.route('/upload')
+@app.route('/upload', methods=["GET", "POST"])
 def upload():
-    project = request.args.get("project", "")
-    description = request.args.get("description", "")
-    return render_template('upload.html', project=project, description=description, **getconfig.renderables)
+    print("upload", request.method)
+    if request.method == 'GET':
+        project = request.args.get("project", "")
+        description = request.args.get("description", "")
+        return render_template('upload.html', project=project, description=description, **getconfig.renderables)
+    elif request.method == 'POST':
+        response = hmfd()
+        if response.status_code == 200:
+            project = request.form["name"]
+            version = request.form["version"]
+            return redirect(f"{project}/{version}")
+        else:
+            return response
+    else:
+        abort(405)
 
 
 @app.route('/hmfd', methods=['POST', 'DELETE'])
@@ -24,24 +36,17 @@ def hmfd():
     if getconfig.readonly:
         return abort(403)
 
-    print(request.form)
-    print(request.files)
-    print(request.method)
+    print("hmfd", request.method)
     if request.method == 'POST':
         if not request.files:
             return abort(400, 'Request is missing a zip/tar file.')
-        try:
-            uploaded_file = util.file_from_request(request)
-            unpack_project(
-                uploaded_file,
-                request.form,
-                getconfig.docfiles_dir
-            )
-            uploaded_file.close()
-        except Exception as e:
-            import traceback
-            import sys
-            print(traceback.format_exc())
+        uploaded_file = util.file_from_request(request)
+        unpack_project(
+            uploaded_file,
+            request.form,
+            getconfig.docfiles_dir
+        )
+        uploaded_file.close()
     elif request.method == 'DELETE':
         if getconfig.disable_delete:
             return abort(403)
