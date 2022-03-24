@@ -57,35 +57,39 @@ def latest_root(project):
 
 @app.route('/<project>/latest/<path:path>')
 def latest(project, path):
-    parsed_docfiles = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
-    proj_for_name = dict((p['name'], p) for p in parsed_docfiles)
-    if project not in proj_for_name:
-        return 'Project %s not found' % project, 404
-    latestindex = proj_for_name[project]['versions'][-1]['link']
-    if path:
-        latestlink = '%s/%s' % (os.path.dirname(latestindex), path)
-    else:
-        latestlink = latestindex
-    # return redirect('/' + latestlink)
-    return render_template('wrapper.html', embed_url=f"/{latestlink}", **getconfig.renderables)
+    return version(project, "latest", path)
 
 
-# TODO
+@app.route('/<project>/<vers>/')
+def version_root(project, vers):
+    return version(project, vers, "")
+
+
 @app.route('/<project>/<version>/<path:path>')
-def version(project, path):
+def version(project, version, path):
     parsed_docfiles = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
     proj_for_name = dict((p['name'], p) for p in parsed_docfiles)
     if project not in proj_for_name:
         return 'Project %s not found' % project, 404
-    latestindex = proj_for_name[project]['versions'][-1]['link']
-    if path:
-        latestlink = '%s/%s' % (os.path.dirname(latestindex), path)
+
+    if version == "latest":
+        version_index = proj_for_name[project]['versions'][-1]['link']
     else:
-        latestlink = latestindex
+        version_to_index = {version["version"]: version["link"] for version in proj_for_name[project]['versions']}
+        if version not in version_to_index:
+            return 'Version %s not found' % version, 404
+        version_index = version_to_index.get(version, None)
+
+    if path:
+        version_link = '/%s/%s/%s' % (getconfig.docfiles_link_root, os.path.dirname(version_index), path)
+    else:
+        version_link = f'/{getconfig.docfiles_link_root}/{version_index}/index.html'
+    print(project, version, path, version_link)
+    print()
     # return redirect('/' + latestlink)
-    return render_template('wrapper.html', embed_url=f"/{latestlink}", **getconfig.renderables)
+    return render_template('wrapper.html', embed_url=f"{version_link}", **getconfig.renderables)
 
 
-app.wsgi_app = DispatcherMiddleware(app, {
+app.wsgi_app = DispatcherMiddleware(Flask("placeholder"), {
     app.config['APPLICATION_ROOT']: app.wsgi_app,
 })
