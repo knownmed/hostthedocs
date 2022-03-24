@@ -70,6 +70,22 @@ def latest(project, path):
     return render_template('wrapper.html', embed_url=f"/{latestlink}", **getconfig.renderables)
 
 
+# TODO
+@app.route('/<project>/<version>/<path:path>')
+def latest(project, path):
+    parsed_docfiles = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    proj_for_name = dict((p['name'], p) for p in parsed_docfiles)
+    if project not in proj_for_name:
+        return 'Project %s not found' % project, 404
+    latestindex = proj_for_name[project]['versions'][-1]['link']
+    if path:
+        latestlink = '%s/%s' % (os.path.dirname(latestindex), path)
+    else:
+        latestlink = latestindex
+    # return redirect('/' + latestlink)
+    return render_template('wrapper.html', embed_url=f"/{latestlink}", **getconfig.renderables)
+
+
 app.wsgi_app = DispatcherMiddleware(app, {
     app.config['APPLICATION_ROOT']: app.wsgi_app,
 })
