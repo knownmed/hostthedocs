@@ -38,17 +38,22 @@
                             </a></p>
                             {% endif %}
                         {% endfor %}
-                        <select name="{{ project.name }}" onchange="gotodocs(this);"
-                                class="btn btn-success dropdown-toggle" type="button"
-                                role="menu" aria-haspopup="true" aria-expanded="false">
-                        {% for version in project.versions | reverse %}
-                            {% if version.version != 'latest' %}
-                                <option value="{{ version.link }}">{{ version.version }}</option>
-                            {% endif %}
-                        {% endfor %}
-                        </select>
-                        <!--<p><a href="#" class="btn btn-primary">Buy Now!</a>  <a href="#" class="btn btn-default">More Info</a>-->
-                        <!--</p>-->
+                        <div class="row text-left">
+                            <div class="col-sm-8">
+                                <select name="{{ project.name }}" onchange="gotodocs(this);"
+                                        class="btn btn-success dropdown-toggle" type="button"
+                                        role="menu" aria-haspopup="true" aria-expanded="false">
+                                {% for version in project.versions | reverse %}
+                                    {% if version.version != 'latest' %}
+                                        <option value="{{ version.link }}">{{ version.version }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-sm-4 text-right">
+                                <p><a href="upload?project={{project.name}}&description={{project.description}}" class="btn btn-primary">+</a></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

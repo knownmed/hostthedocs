@@ -15,7 +15,8 @@ app.config['MAX_CONTENT_LENGTH'] = getconfig.max_content_mb * 1024 * 1024
 @app.route('/upload')
 def upload():
     project = request.args.get("project", "")
-    return render_template('upload.html', project=project, **getconfig.renderables)
+    description = request.args.get("description", "")
+    return render_template('upload.html', project=project, description=description, **getconfig.renderables)
 
 
 @app.route('/hmfd', methods=['POST', 'DELETE'])
@@ -23,16 +24,24 @@ def hmfd():
     if getconfig.readonly:
         return abort(403)
 
+    print(request.form)
+    print(request.files)
+    print(request.method)
     if request.method == 'POST':
         if not request.files:
             return abort(400, 'Request is missing a zip/tar file.')
-        uploaded_file = util.file_from_request(request)
-        unpack_project(
-            uploaded_file,
-            request.form,
-            getconfig.docfiles_dir
-        )
-        uploaded_file.close()
+        try:
+            uploaded_file = util.file_from_request(request)
+            unpack_project(
+                uploaded_file,
+                request.form,
+                getconfig.docfiles_dir
+            )
+            uploaded_file.close()
+        except Exception as e:
+            import traceback
+            import sys
+            print(traceback.format_exc())
     elif request.method == 'DELETE':
         if getconfig.disable_delete:
             return abort(403)

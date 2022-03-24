@@ -115,6 +115,7 @@ def unpack_project(uploaded_file, proj_metadata, docfiles_dir):
     projdir = os.path.join(docfiles_dir, proj_metadata['name'])
     verdir = os.path.join(projdir, proj_metadata['version'])
 
+
     if not os.path.isdir(verdir):
         os.makedirs(verdir)
 
