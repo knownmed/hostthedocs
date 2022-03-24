@@ -8,6 +8,8 @@ flask = "*"
 six = "*"
 conf = "*"
 natsort = "*"
+waitress = "*"
+gevent = "*"
 
 [dev-packages]
 

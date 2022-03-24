@@ -1,7 +1,8 @@
 import os
 
 from flask import abort, Flask, jsonify, redirect, render_template, request
-from werkzeug.wsgi import DispatcherMiddleware
+# from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from . import getconfig, util
 from .filekeeper import delete_files, insert_link_to_latest, parse_docfiles, unpack_project
@@ -113,3 +114,7 @@ def version(project, version, path):
 app.wsgi_app = DispatcherMiddleware(Flask("placeholder"), {
     app.config['APPLICATION_ROOT']: app.wsgi_app,
 })
+
+
+def get_app():
+    return app
