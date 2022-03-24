@@ -65,7 +65,8 @@ def latest(project, path):
         latestlink = '%s/%s' % (os.path.dirname(latestindex), path)
     else:
         latestlink = latestindex
-    return redirect('/' + latestlink)
+    # return redirect('/' + latestlink)
+    return render_template('wrapper.html', embed_url=f"/{latestlink}", **getconfig.renderables)
 
 
 app.wsgi_app = DispatcherMiddleware(app, {

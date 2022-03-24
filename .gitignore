@@ -43,3 +43,6 @@ nosetests.xml
 hostthedocs/static/docfiles/*
 foo.html
 index.html
+
+# Configuration
+/conf.py
