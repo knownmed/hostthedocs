@@ -45,6 +45,7 @@ def hmfd():
 @app.route('/')
 def home():
     projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    # TODO relative or absolute paths?
     insert_link_to_latest(projects, '%(project)s/latest')
     return render_template('index.html', projects=projects, **getconfig.renderables)
 
