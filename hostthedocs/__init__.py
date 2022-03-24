@@ -12,6 +12,12 @@ app.config["APPLICATION_ROOT"] = getconfig.prefix
 app.config['MAX_CONTENT_LENGTH'] = getconfig.max_content_mb * 1024 * 1024
 
 
+@app.route('/upload')
+def upload():
+    project = request.args.get("project", "")
+    return render_template('upload.html', project=project, **getconfig.renderables)
+
+
 @app.route('/hmfd', methods=['POST', 'DELETE'])
 def hmfd():
     if getconfig.readonly:
