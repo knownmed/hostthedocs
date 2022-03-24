@@ -73,7 +73,7 @@ def docker_tags():
 def task_docker_build():
     tag, _ = docker_tags()
     return {
-        "actions": [Interactive(f"DOCKER_BUILDKIT=1 docker build --ssh default . -f ./build/Dockerfile -t {tag}")],
+        "actions": [Interactive(f"DOCKER_BUILDKIT=1 docker build --ssh default . -f ./Dockerfile -t {tag}")],
         "verbosity": 2,
     }
 
