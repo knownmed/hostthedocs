@@ -12,6 +12,7 @@ waitress = "*"
 gevent = "*"
 
 [dev-packages]
+doit = "*"
 
 [requires]
 python_version = "3.6"

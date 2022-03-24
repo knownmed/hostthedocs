@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a0f316594ae19ef75148171d4b0bf15efb1c375c7878eddd5de65288a2219ace"
+            "sha256": "fcdf773c169744ffb42d62e55c48c3c15c346860f92807afdb87480d28ea48cd"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -367,5 +367,29 @@
             "version": "==5.4.0"
         }
     },
-    "develop": {}
+    "develop": {
+        "cloudpickle": {
+            "hashes": [
+                "sha256:5cd02f3b417a783ba84a4ec3e290ff7929009fe51f6405423cfccfadd43ba4a4",
+                "sha256:6b2df9741d06f43839a3275c4e6632f7df6487a1f181f5f46a052d3c917c3d11"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2.0.0"
+        },
+        "doit": {
+            "hashes": [
+                "sha256:388111f8a6a5b3b44620ceeb287d0585927c85d0d6d3f8790d34fbb45c0cf6c3",
+                "sha256:a7f414de4c596a96a727890e0792709a103f1af48e8180e27e07862fff781238"
+            ],
+            "index": "pypi",
+            "version": "==0.34.2"
+        },
+        "macfsevents": {
+            "hashes": [
+                "sha256:1324b66b356051de662ba87d84f73ada062acd42b047ed1246e60a449f833e10"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.8.1"
+        }
+    }
 }
