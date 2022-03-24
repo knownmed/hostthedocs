@@ -2,16 +2,17 @@
 
 {% block body %}
 
-<style>
-    .embed {
-        height: 100%;
-    }
-</style>
-
-<div class="container-fluid embed">
-    <div class="row text-center embed">
-        <iframe class="col-xs-12 embed" type="text/html" src="{{embed_url}}"></iframe>
-    </div>
+<div class="container-fluid text-center content">
+    <iframe class="embed" type="text/html" src="{{embed_url}}"></iframe>
 </div>
+
+<!--
+<div class="container-fluid embed">
+</div>
+<div class="container-fluid embed">
+</div>
+
+<iframe class="embed" type="text/html" src="{{embed_url}}"></iframe>
+-->
 
 {% endblock %}
