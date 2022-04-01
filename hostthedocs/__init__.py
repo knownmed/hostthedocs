@@ -106,8 +106,9 @@ def version(project, version, path):
     else:
         version_link = f'/{getconfig.docfiles_link_root}/{version_index}/index.html'
 
+    proj = proj_for_name[project]
     insert_link_to_latest(projects, '%(project)s/latest')
-    return render_template('wrapper.html', embed_url=f"{version_link}", projects=projects, **getconfig.renderables)
+    return render_template('wrapper.html', embed_url=f"{version_link}", project=proj, projects=projects, **getconfig.renderables)
 
 
 app.wsgi_app = DispatcherMiddleware(Flask("placeholder"), {

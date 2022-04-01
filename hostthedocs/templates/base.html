@@ -97,6 +97,18 @@
                                 {% endfor %}
                             </ul>
                         </li>
+                        {% if project %}
+                        <li role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                {{project.name}} <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for version in project.versions %}
+                                <li><a href="{{prefix}}/{{version['link']}}/">{{ version["version"] }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
