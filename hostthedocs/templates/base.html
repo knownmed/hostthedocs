@@ -100,11 +100,11 @@
                         {% if project %}
                         <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                {{project.name}} <span class="caret"></span>
+                                Versions <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
                                 {% for version in project.versions | reverse %}
-                                <li><a href="{{prefix}}/{{version['link']}}/">{{ version["version"] }}{% if version["is_latest"] %} (latest){% endif %}</a></li>
+                                <li><a href="{{prefix}}/{{version['link']}}/">{{ version["version"] }}{% if version["is_latest"] %} <strong>latest</strong>{% endif %}</a></li>
                                 {% endfor %}
                             </ul>
                         </li>

@@ -97,7 +97,6 @@ def version_root(project, vers):
 @app.route('/<project>/<version>/<path:path>')
 def version(project, version, path):
     projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
-    print(projects)
     proj_for_name = dict((p['name'], p) for p in projects)
     if project not in proj_for_name:
         return 'Project %s not found' % project, 404
