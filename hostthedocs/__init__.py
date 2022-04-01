@@ -84,6 +84,7 @@ def latest(project, path):
         return 'Project %s not found' % project, 404
 
     vers = proj_for_name[project]['versions'][-1]["version"]
+    # TODO should I redirect or render template?
     return redirect(f"{getconfig.prefix}/{project}/{vers}/{path}")
     # return version(project, vers, path)
 
@@ -96,6 +97,7 @@ def version_root(project, vers):
 @app.route('/<project>/<version>/<path:path>')
 def version(project, version, path):
     projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    print(projects)
     proj_for_name = dict((p['name'], p) for p in projects)
     if project not in proj_for_name:
         return 'Project %s not found' % project, 404
@@ -114,7 +116,7 @@ def version(project, version, path):
         version_link = f'/{getconfig.docfiles_link_root}/{version_index}/index.html'
 
     proj = proj_for_name[project]
-    insert_link_to_latest(projects, '%(project)s/latest')
+    # insert_link_to_latest(projects, '%(project)s/latest')
     return render_template('wrapper.html', embed_url=f"{version_link}", project=proj, projects=projects, **getconfig.renderables)
 
 

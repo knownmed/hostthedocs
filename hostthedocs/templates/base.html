@@ -103,8 +103,8 @@
                                 {{project.name}} <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                {% for version in project.versions %}
-                                <li><a href="{{prefix}}/{{version['link']}}/">{{ version["version"] }}</a></li>
+                                {% for version in project.versions | reverse %}
+                                <li><a href="{{prefix}}/{{version['link']}}/">{{ version["version"] }}{% if version["is_latest"] %} (latest){% endif %}</a></li>
                                 {% endfor %}
                             </ul>
                         </li>

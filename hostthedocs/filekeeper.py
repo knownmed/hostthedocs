@@ -60,6 +60,9 @@ def _get_proj_dict(docfiles_dir, proj_dir, link_root):
         return None
 
     versions = natsort.natsorted(versions, key=sort_by_version)
+    for version in versions[:-1]:
+        version["is_latest"] = False
+    versions[-1]["is_latest"] = True
     descr = DEFAULT_PROJECT_DESCRIPTION
     if 'description.txt' in allpaths:
         dpath = join_with_default_path('description.txt')
