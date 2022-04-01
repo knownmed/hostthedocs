@@ -78,7 +78,14 @@ def latest_root(project):
 
 @app.route('/<project>/latest/<path:path>')
 def latest(project, path):
-    return version(project, "latest", path)
+    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    proj_for_name = dict((p['name'], p) for p in projects)
+    if project not in proj_for_name:
+        return 'Project %s not found' % project, 404
+
+    vers = proj_for_name[project]['versions'][-1]["version"]
+    return redirect(f"{getconfig.prefix}/{project}/{vers}/{path}")
+    # return version(project, vers, path)
 
 
 @app.route('/<project>/<vers>/')
