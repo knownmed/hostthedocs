@@ -65,8 +65,8 @@ def hmfd():
 
 @app.route('/')
 def home():
-    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
     # TODO relative or absolute paths?
+    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
     insert_link_to_latest(projects, '%(project)s/latest')
     return render_template('index.html', projects=projects, **getconfig.renderables)
 
@@ -88,8 +88,8 @@ def version_root(project, vers):
 
 @app.route('/<project>/<version>/<path:path>')
 def version(project, version, path):
-    parsed_docfiles = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
-    proj_for_name = dict((p['name'], p) for p in parsed_docfiles)
+    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    proj_for_name = dict((p['name'], p) for p in projects)
     if project not in proj_for_name:
         return 'Project %s not found' % project, 404
 
@@ -105,10 +105,9 @@ def version(project, version, path):
         version_link = '/%s/%s/%s' % (getconfig.docfiles_link_root, os.path.dirname(version_index), path)
     else:
         version_link = f'/{getconfig.docfiles_link_root}/{version_index}/index.html'
-    print(project, version, path, version_link)
-    print()
-    # return redirect('/' + latestlink)
-    return render_template('wrapper.html', embed_url=f"{version_link}", **getconfig.renderables)
+
+    insert_link_to_latest(projects, '%(project)s/latest')
+    return render_template('wrapper.html', embed_url=f"{version_link}", projects=projects, **getconfig.renderables)
 
 
 app.wsgi_app = DispatcherMiddleware(Flask("placeholder"), {
