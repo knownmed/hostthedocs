@@ -85,11 +85,10 @@
                         <a class="navbar-brand" href="{{prefix}}">{{ title }}</a>
                     </div>
                     <ul class="nav navbar-nav">
-                        <li><a href="{{prefix}}/upload">Upload</a></li>
                         <!-- <li><a href="{{prefix}}/delete">Delete</a></li> -->
                         <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                Docs <span class="caret"></span>
+                                Packages <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
                                 {% for project in projects %}
@@ -109,6 +108,8 @@
                             </ul>
                         </li>
                         {% endif %}
+                        <li><a href="{{prefix}}/upload">Upload</a></li>
+                        <li><a href="{{prefix}}/delete">Delete</a></li>
                     </ul>
                 </div>
             </div>

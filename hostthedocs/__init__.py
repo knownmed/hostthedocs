@@ -15,7 +15,6 @@ app.config['MAX_CONTENT_LENGTH'] = getconfig.max_content_mb * 1024 * 1024
 
 @app.route('/upload', methods=["GET", "POST"])
 def upload():
-    print("upload", request.method)
     if request.method == 'GET':
         project = request.args.get("project", "")
         description = request.args.get("description", "")
@@ -30,6 +29,12 @@ def upload():
             return response
     else:
         abort(405)
+
+
+@app.route('/delete', methods=["GET", "POST"])
+def delete():
+    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    return render_template('delete.html', projects=projects, **getconfig.renderables)
 
 
 @app.route('/hmfd', methods=['POST', 'DELETE'])
