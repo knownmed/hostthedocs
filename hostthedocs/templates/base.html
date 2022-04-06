@@ -109,7 +109,9 @@
                         </li>
                         {% endif %}
                         <li><a href="{{prefix}}/upload">Upload</a></li>
-                        <li><a href="{{prefix}}/delete">Delete</a></li>
+                        {% if project %}
+                        <li><a href="{{prefix}}/delete/{{project.name}}">Delete</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

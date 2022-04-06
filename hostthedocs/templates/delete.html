@@ -7,31 +7,23 @@
         <div class="form-group">
             <label for="name" class="col-sm-2 control-label">Project</label>
             <div class="col-sm-6">
-                <input class="form-control" name="name" id="name" placeholder="Project" value="{{project}}">
+                <input class="form-control" name="name" id="name" placeholder="Project" value="{{project.name}}" readonly>
             </div>
         </div>
         <div class="form-group">
             <label for="version" class="col-sm-2 control-label">Version</label>
             <div class="col-sm-6">
-                <input class="form-control" name="version" id="version" placeholder="Version" value="{{version}}">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="description" class="col-sm-2 control-label">Description</label>
-            <div class="col-sm-6">
-                <input class="form-control" name="description" id="description" placeholder="Description" value="{{description}}">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="filedata" class="col-sm-2 control-label">Docs Zip File</label>
-            <div class="col-sm-6">
-                <input type="file" class="form-control" name="filedata" id="filedata">
+                <select id="version" name="version" class="form-control">
+                    {% for version in project.versions %}
+                    <option>{{ version["version"] }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-2"></div>
             <div class="col-sm-6">
-                <button type="submit" class="btn btn-default">Submit</button>
+                <button type="submit" class="btn btn-default">Delete</button>
             </div>
         </div>
     </form>

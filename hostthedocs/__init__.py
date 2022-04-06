@@ -18,7 +18,8 @@ def upload():
     if request.method == 'GET':
         project = request.args.get("project", "")
         description = request.args.get("description", "")
-        return render_template('upload.html', project=project, description=description, **getconfig.renderables)
+        projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+        return render_template('upload.html', projects=projects, project=project, description=description, **getconfig.renderables)
     elif request.method == 'POST':
         response = hmfd()
         if response.status_code == 200:
@@ -31,10 +32,26 @@ def upload():
         abort(405)
 
 
-@app.route('/delete', methods=["GET", "POST"])
-def delete():
-    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
-    return render_template('delete.html', projects=projects, **getconfig.renderables)
+# TODO different routing?
+@app.route('/delete/<project>/', methods=["GET", "POST"])
+def delete(project):
+    if request.method == 'GET':
+        projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+        proj_for_name = dict((p['name'], p) for p in projects)
+        if project not in proj_for_name:
+            return 'Project %s not found' % project, 404
+        proj = proj_for_name[project]
+        return render_template('delete.html', projects=projects, project=proj, **getconfig.renderables)
+    elif request.method == 'POST':
+        # TODO error checking
+        delete(
+            request.form['name'],
+            request.form['version'],
+            entire_project=False,
+        )
+        return redirect(f"/{getconfig.prefix}")
+    else:
+        abort(405)
 
 
 @app.route('/hmfd', methods=['POST', 'DELETE'])
@@ -42,7 +59,6 @@ def hmfd():
     if getconfig.readonly:
         return abort(403)
 
-    print("hmfd", request.method)
     if request.method == 'POST':
         if not request.files:
             return abort(400, 'Request is missing a zip/tar file.')
@@ -57,15 +73,24 @@ def hmfd():
         if getconfig.disable_delete:
             return abort(403)
 
-        delete_files(
+        delete(
             request.args['name'],
             request.args.get('version'),
-            getconfig.docfiles_dir,
-            request.args.get('entire_project'))
+            entire_project=request.args.get('entire_project'),
+        )
     else:
         abort(405)
 
     return jsonify({'success': True})
+
+
+def delete(project_name, version_name, entire_project=False):
+    return delete_files(
+        project_name,
+        version_name,
+        getconfig.docfiles_dir,
+        entire_project,
+    )
 
 
 @app.route('/')
@@ -90,6 +115,7 @@ def latest(project, path):
 
     vers = proj_for_name[project]['versions'][-1]["version"]
     # TODO should I redirect or render template?
+    # TODO it might be nice to allow linking to 'latest'
     return redirect(f"{getconfig.prefix}/{project}/{vers}/{path}")
     # return version(project, vers, path)
 
