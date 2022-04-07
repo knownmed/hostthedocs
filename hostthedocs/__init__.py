@@ -49,7 +49,7 @@ def delete(project):
             request.form['version'],
             entire_project=False,
         )
-        return redirect(f"/{getconfig.prefix}")
+        return redirect(f"{getconfig.prefix}")
     else:
         abort(405)
 
