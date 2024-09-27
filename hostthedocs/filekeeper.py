@@ -52,13 +52,17 @@ def _get_proj_dict(docfiles_dir, proj_dir, link_root):
 
     allpaths = os.listdir(join_with_default_path())
     versions = [
-        dict(version=p, link='%s/%s/%s/index.html' % (link_root, proj_dir, p))
+        # TODO absolute or relative paths?
+        dict(version=p, link='%s/%s' % (proj_dir, p))
         for p in allpaths if _is_valid_doc_version(join_with_default_path(p))
     ]
     if len(versions) == 0:
         return None
 
     versions = natsort.natsorted(versions, key=sort_by_version)
+    for version in versions[:-1]:
+        version["is_latest"] = False
+    versions[-1]["is_latest"] = True
     descr = DEFAULT_PROJECT_DESCRIPTION
     if 'description.txt' in allpaths:
         dpath = join_with_default_path('description.txt')
@@ -113,6 +117,7 @@ def find_root_dir(compressed_file, file_ext = ".html"):
 def unpack_project(uploaded_file, proj_metadata, docfiles_dir):
     projdir = os.path.join(docfiles_dir, proj_metadata['name'])
     verdir = os.path.join(projdir, proj_metadata['version'])
+
 
     if not os.path.isdir(verdir):
         os.makedirs(verdir)

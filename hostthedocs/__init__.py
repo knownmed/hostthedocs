@@ -1,13 +1,57 @@
 import os
 
 from flask import abort, Flask, jsonify, redirect, render_template, request
+# from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from . import getconfig, util
 from .filekeeper import delete_files, insert_link_to_latest, parse_docfiles, unpack_project
 
 app = Flask(__name__)
 
+app.config["APPLICATION_ROOT"] = getconfig.prefix
 app.config['MAX_CONTENT_LENGTH'] = getconfig.max_content_mb * 1024 * 1024
+
+
+@app.route('/upload', methods=["GET", "POST"])
+def upload():
+    if request.method == 'GET':
+        project = request.args.get("project", "")
+        description = request.args.get("description", "")
+        projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+        return render_template('upload.html', projects=projects, project=project, description=description, **getconfig.renderables)
+    elif request.method == 'POST':
+        response = hmfd()
+        if response.status_code == 200:
+            project = request.form["name"]
+            version = request.form["version"]
+            return redirect(f"{project}/{version}")
+        else:
+            return response
+    else:
+        abort(405)
+
+
+# TODO different routing?
+@app.route('/delete/<project>/', methods=["GET", "POST"])
+def delete(project):
+    if request.method == 'GET':
+        projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+        proj_for_name = dict((p['name'], p) for p in projects)
+        if project not in proj_for_name:
+            return 'Project %s not found' % project, 404
+        proj = proj_for_name[project]
+        return render_template('delete.html', projects=projects, project=proj, **getconfig.renderables)
+    elif request.method == 'POST':
+        # TODO error checking
+        delete(
+            request.form['name'],
+            request.form['version'],
+            entire_project=False,
+        )
+        return redirect(f"{getconfig.prefix}")
+    else:
+        abort(405)
 
 
 @app.route('/hmfd', methods=['POST', 'DELETE'])
@@ -29,19 +73,29 @@ def hmfd():
         if getconfig.disable_delete:
             return abort(403)
 
-        delete_files(
+        delete(
             request.args['name'],
             request.args.get('version'),
-            getconfig.docfiles_dir,
-            request.args.get('entire_project'))
+            entire_project=request.args.get('entire_project'),
+        )
     else:
         abort(405)
 
     return jsonify({'success': True})
 
 
+def delete(project_name, version_name, entire_project=False):
+    return delete_files(
+        project_name,
+        version_name,
+        getconfig.docfiles_dir,
+        entire_project,
+    )
+
+
 @app.route('/')
 def home():
+    # TODO relative or absolute paths?
     projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
     insert_link_to_latest(projects, '%(project)s/latest')
     return render_template('index.html', projects=projects, **getconfig.renderables)
@@ -54,13 +108,48 @@ def latest_root(project):
 
 @app.route('/<project>/latest/<path:path>')
 def latest(project, path):
-    parsed_docfiles = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
-    proj_for_name = dict((p['name'], p) for p in parsed_docfiles)
+    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    proj_for_name = dict((p['name'], p) for p in projects)
     if project not in proj_for_name:
         return 'Project %s not found' % project, 404
-    latestindex = proj_for_name[project]['versions'][-1]['link']
-    if path:
-        latestlink = '%s/%s' % (os.path.dirname(latestindex), path)
+
+    vers = proj_for_name[project]['versions'][-1]["version"]
+    # TODO should I redirect or render template?
+    # TODO it might be nice to allow linking to 'latest'
+    return redirect(f"{getconfig.prefix}/{project}/{vers}/{path}")
+    # return version(project, vers, path)
+
+
+@app.route('/<project>/<vers>/')
+def version_root(project, vers):
+    return version(project, vers, "")
+
+
+@app.route('/<project>/<version>/<path:path>')
+def version(project, version, path):
+    projects = parse_docfiles(getconfig.docfiles_dir, getconfig.docfiles_link_root)
+    proj_for_name = dict((p['name'], p) for p in projects)
+    if project not in proj_for_name:
+        return 'Project %s not found' % project, 404
+
+    if version == "latest":
+        version_index = proj_for_name[project]['versions'][-1]['link']
     else:
-        latestlink = latestindex
-    return redirect('/' + latestlink)
+        version_to_index = {version["version"]: version["link"] for version in proj_for_name[project]['versions']}
+        if version not in version_to_index:
+            return 'Version %s not found' % version, 404
+        version_index = version_to_index.get(version, None)
+
+    if path:
+        version_link = '/%s/%s/%s' % (getconfig.docfiles_link_root, os.path.dirname(version_index), path)
+    else:
+        version_link = f'/{getconfig.docfiles_link_root}/{version_index}/index.html'
+
+    proj = proj_for_name[project]
+    # insert_link_to_latest(projects, '%(project)s/latest')
+    return render_template('wrapper.html', embed_url=f"{version_link}", project=proj, projects=projects, **getconfig.renderables)
+
+
+app.wsgi_app = DispatcherMiddleware(Flask("placeholder"), {
+    app.config['APPLICATION_ROOT']: app.wsgi_app,
+})

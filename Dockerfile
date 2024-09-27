@@ -1,17 +1,22 @@
-FROM python:3-alpine
+FROM python:3.9.10-slim-bullseye AS stage0
+
+RUN apt update -y && apt install -y build-essential git
 RUN pip install pipenv
+RUN mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
-ADD ./Pipfile ./Pipfile
-ADD ./Pipfile.lock ./Pipfile.lock
+COPY ./ /hostthedocs/
+WORKDIR /hostthedocs/
+RUN --mount=type=ssh PIPENV_VENV_IN_PROJECT=1 pipenv install
+# We will be mounting a volume here to host docs
+RUN rm -rf ./hostthedocs/static/docfiles/
+# We will configure from env vars
+RUN rm -rf ./conf.py
 
-RUN pipenv install --deploy --system
 
-ADD ./hostthedocs/ ./hostthedocs/
-ADD ./runserver.py ./runserver.py
+# TODO go back to running with pipenv instead of python?
+# TODO Or install in venv and copy to site-packages?
+FROM python:3.9.10-slim-bullseye AS final
 
-ENV HTD_HOST "0.0.0.0"
-ENV HTD_PORT 5000
-
-EXPOSE 5000
-
-CMD [ "python", "runserver.py" ]
+COPY --from=stage0 /hostthedocs/ /hostthedocs/
+RUN pip install pipenv
+WORKDIR /hostthedocs/
